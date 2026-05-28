@@ -1,0 +1,52 @@
+# WordPress export data
+
+Place your WordPress export file here:
+
+- **Path:** `data/wp-export.xml` or any `data/*.xml` (newest file is used automatically)
+- **Example:** `data/africantradechamber.WordPress.2026-05-26.xml`
+- **How:** WordPress Admin → Tools → Export → News (or All content)
+
+Optional explicit path:
+
+```bash
+npm run migrate:news -- data/africantradechamber.WordPress.2026-05-26.xml
+```
+
+Then run:
+
+```bash
+docker compose up -d postgres
+npm run migrate:news
+```
+
+Posts appear on http://localhost:3002/news
+
+## Team members (About page)
+
+Export must include **TeamPress** members (`post_type: ex_team`). Use **All content** export.
+
+```bash
+npm run migrate:team -- data/africantradechamber.WordPress.2026-05-26.xml
+```
+
+Members appear on http://localhost:3002/about
+
+## WordPress uploads (media)
+
+Place the `wp-content/uploads` folder here as `data/uploads/`.
+
+Link it for Next.js static serving (run once from project root):
+
+```powershell
+cmd /c mklink /J "public\uploads" "data\uploads"
+```
+
+Images are served at `/uploads/...`. Legacy `/wp-content/uploads/...` URLs rewrite to the same path.
+
+## Fellows (2025 cohort page)
+
+```bash
+npm run migrate:team -- data/africantradechamber.WordPress.2026-05-26.xml --fellows-only
+```
+
+Fellows appear on http://localhost:3002/fellowship/2025

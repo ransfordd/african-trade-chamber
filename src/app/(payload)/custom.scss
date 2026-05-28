@@ -1,0 +1,147 @@
+@layer payload {
+  :root {
+    --atc-navy: #002740;
+    --atc-gold: #e6b14a;
+    --atc-yellow: #fece00;
+  }
+
+  /* Login screen — navy background, gold CTA (matches public site) */
+  .template-minimal {
+    background-color: var(--atc-navy);
+    color: #fff;
+  }
+
+  .template-minimal .atc-login-heading {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0 0 1.5rem;
+    text-align: center;
+  }
+
+  .template-minimal .field-type .field-label,
+  .template-minimal .field-type label,
+  .template-minimal a {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .template-minimal a:hover {
+    color: var(--atc-yellow);
+  }
+
+  .template-minimal .btn--style-primary,
+  .template-minimal button[type='submit'] {
+    background-color: var(--atc-yellow) !important;
+    border-color: var(--atc-yellow) !important;
+    color: var(--atc-navy) !important;
+    font-weight: 600;
+  }
+
+  .template-minimal .btn--style-primary:hover,
+  .template-minimal button[type='submit']:hover {
+    background-color: var(--atc-gold) !important;
+    border-color: var(--atc-gold) !important;
+  }
+
+  /* Logged-in admin — light UI with navy accents */
+  html[data-theme='light'] {
+    --theme-elevation-1000: var(--atc-navy);
+  }
+
+  html[data-theme='light'] .btn--style-primary {
+    background-color: var(--atc-navy);
+    border-color: var(--atc-navy);
+    color: #fff;
+  }
+
+  html[data-theme='light'] .btn--style-primary:hover {
+    background-color: #003d5c;
+    border-color: #003d5c;
+  }
+
+  /* ATC admin chrome */
+  .atc-admin-top-bar {
+    background: var(--atc-navy);
+    border-bottom: 3px solid var(--atc-yellow);
+    color: #fff;
+    width: 100%;
+    z-index: 10;
+  }
+
+  .atc-admin-top-bar__utility {
+    align-items: center;
+    background: var(--atc-yellow);
+    color: var(--atc-navy);
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    gap: 0.75rem 1.25rem;
+    justify-content: space-between;
+    padding: 0.4rem 1.25rem;
+  }
+
+  .atc-admin-top-bar__utility-link {
+    color: var(--atc-navy);
+    text-decoration: underline;
+  }
+
+  .atc-admin-top-bar__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    padding: 0.65rem 1.25rem;
+  }
+
+  .atc-admin-top-bar__nav-link {
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .atc-admin-top-bar__nav-link:hover {
+    color: var(--atc-yellow);
+  }
+
+  .atc-admin-nav-footer {
+    border-top: 1px solid var(--theme-elevation-150);
+    color: var(--theme-elevation-600);
+    font-size: 0.75rem;
+    line-height: 1.45;
+    margin-top: auto;
+    padding: 1rem 1.25rem 1.25rem;
+  }
+
+  .atc-admin-nav-footer__title {
+    color: var(--atc-navy);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    margin: 0 0 0.35rem;
+  }
+
+  .atc-admin-nav-footer__hint {
+    margin: 0 0 0.5rem;
+  }
+
+  .atc-admin-nav-footer__link {
+    color: var(--atc-navy);
+    display: inline-block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .atc-admin-nav-footer__copy {
+    margin: 0;
+    opacity: 0.85;
+  }
+
+  /* Sidebar visible on desktop (Payload hides it until ☰ is clicked) */
+  @media (min-width: 1024px) {
+    .template-default.template-default--nav-hydrated .nav {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+    }
+  }
+}

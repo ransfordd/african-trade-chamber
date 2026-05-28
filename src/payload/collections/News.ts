@@ -1,0 +1,48 @@
+import type { CollectionConfig } from 'payload'
+
+export const News: CollectionConfig = {
+  slug: 'news',
+  admin: {
+    useAsTitle: 'title',
+    defaultColumns: ['title', 'category', 'publishedAt', 'featured'],
+  },
+  fields: [
+    { name: 'title', type: 'text', required: true },
+    { name: 'slug', type: 'text', required: true, unique: true, index: true },
+    { name: 'excerpt', type: 'textarea' },
+    { name: 'content', type: 'richText' },
+    {
+      name: 'category',
+      type: 'select',
+      options: [
+        { label: 'Chamber News', value: 'chamber' },
+        { label: 'Member News', value: 'member' },
+        { label: 'Press Releases', value: 'press' },
+      ],
+      defaultValue: 'chamber',
+    },
+    { name: 'featuredImage', type: 'upload', relationTo: 'media' },
+    {
+      name: 'imageUrl',
+      type: 'text',
+      admin: { description: 'Remote image URL (e.g. imported from WordPress uploads)' },
+    },
+    { name: 'newsSource', type: 'text' },
+    { name: 'newsAuthor', type: 'text' },
+    { name: 'newsDate', type: 'date' },
+    { name: 'originalUrl', type: 'text' },
+    { name: 'featured', type: 'checkbox', defaultValue: false },
+    {
+      name: 'priority',
+      type: 'select',
+      options: [
+        { label: 'Low', value: 'low' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'High', value: 'high' },
+      ],
+      defaultValue: 'medium',
+    },
+    { name: 'expiryDate', type: 'date' },
+    { name: 'publishedAt', type: 'date' },
+  ],
+}

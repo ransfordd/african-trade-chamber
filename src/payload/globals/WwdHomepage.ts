@@ -1,0 +1,40 @@
+import type { GlobalConfig } from 'payload'
+import { homepageCardFields } from '../fields/homepageCardFields'
+
+export const WwdHomepage: GlobalConfig = {
+  slug: 'wwd-homepage',
+  label: 'Homepage — What We Do',
+  fields: [
+    {
+      name: 'headerTitle',
+      type: 'text',
+      label: 'Header tagline',
+      required: true,
+    },
+    {
+      name: 'headerContent',
+      type: 'textarea',
+      label: 'Header paragraphs (separate with ||)',
+    },
+    {
+      type: 'group',
+      name: 'intro',
+      fields: [
+        { name: 'title', type: 'text', defaultValue: 'Our Services' },
+        { name: 'content', type: 'textarea' },
+        { name: 'imageUrl', type: 'text' },
+        { name: 'buttonText', type: 'text', defaultValue: 'View all services' },
+        { name: 'buttonUrl', type: 'text' },
+      ],
+    },
+    {
+      name: 'services',
+      type: 'array',
+      label: 'Service cards',
+      fields: [
+        ...homepageCardFields,
+        { name: 'order', type: 'number', defaultValue: 0 },
+      ],
+    },
+  ],
+}

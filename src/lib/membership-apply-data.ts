@@ -1,0 +1,146 @@
+export const AFRICAN_COUNTRIES = [
+  'Algeria',
+  'Angola',
+  'Benin',
+  'Botswana',
+  'Burkina Faso',
+  'Burundi',
+  'Cameroon',
+  'Cape Verde',
+  'Central African Republic',
+  'Chad',
+  'Comoros',
+  'Congo',
+  'Democratic Republic of Congo',
+  'Djibouti',
+  'Egypt',
+  'Equatorial Guinea',
+  'Eritrea',
+  'Eswatini',
+  'Ethiopia',
+  'Gabon',
+  'Gambia',
+  'Ghana',
+  'Guinea',
+  'Guinea-Bissau',
+  'Ivory Coast',
+  'Kenya',
+  'Lesotho',
+  'Liberia',
+  'Libya',
+  'Madagascar',
+  'Malawi',
+  'Mali',
+  'Mauritania',
+  'Mauritius',
+  'Morocco',
+  'Mozambique',
+  'Namibia',
+  'Niger',
+  'Nigeria',
+  'Rwanda',
+  'Sao Tome and Principe',
+  'Senegal',
+  'Seychelles',
+  'Sierra Leone',
+  'Somalia',
+  'South Africa',
+  'South Sudan',
+  'Sudan',
+  'Tanzania',
+  'Togo',
+  'Tunisia',
+  'Uganda',
+  'Zambia',
+  'Zimbabwe',
+  'Other',
+] as const
+
+export const BUSINESS_SECTORS = [
+  'Agriculture & Agribusiness',
+  'Manufacturing & Industrialization',
+  'Energy, Oil & Gas',
+  'Infrastructure & Construction',
+  'ICT & Digital Economy',
+  'Finance & Investment',
+  'Healthcare & Pharmaceuticals',
+  'Transport & Logistics',
+  'Creative Economy',
+  'Tourism & Hospitality',
+  'Mining & Natural Resources',
+  'Education & Training',
+  'Real Estate & Property',
+  'Retail & Consumer Goods',
+  'Professional Services',
+  'Other',
+] as const
+
+/** Align with live membership tiers at /membership */
+export const MEMBERSHIP_CATEGORY_OPTIONS = [
+  'Platinum Corporate',
+  'Gold Corporate',
+  'Silver Corporate',
+  'Bronze Corporate',
+  'Public Sector Institutional Membership',
+  'Honorary Membership',
+] as const
+
+export const JOIN_PURPOSE_OPTIONS = [
+  'Market Entry Support',
+  'Business Matchmaking (B2B/B2G)',
+  'Africa Trade Directory Access',
+  'Trade Missions & Events',
+  'Policy Engagement',
+  'Sector Council Participation',
+  'Investment Promotion',
+  'Visibility & Recognition',
+] as const
+
+export const SUPPORT_NEEDED_OPTIONS = [
+  'Trade facilitation & customs support',
+  'Legal or regulatory advisory',
+  'Finding suppliers or distributors',
+  'Access to finance or investment',
+  'Participation in trade shows/missions',
+  'Policy advocacy for our sector',
+  'Capacity building / technical training',
+] as const
+
+export const INDUSTRY_COUNCIL_OPTIONS = [
+  'Agriculture & Agribusiness',
+  'Manufacturing & Industrialization',
+  'Energy, Oil & Gas',
+  'Infrastructure & Construction',
+  'ICT & Digital Economy',
+  'Finance & Investment',
+  'Healthcare & Pharmaceuticals',
+  'Transport & Logistics',
+  'Creative Economy',
+  'Tourism & Hospitality',
+] as const
+
+export const THEMATIC_COUNCIL_OPTIONS = [
+  'Women in Trade',
+  'Youth & Innovation',
+  'Trade Policy & Advocacy',
+  'Green & Blue Economy',
+  'Public-Private Dialogue',
+  'Investment Promotion',
+  'SME Development',
+] as const
+
+export const FORM_STEPS = [
+  { number: 1, title: 'Organization Details' },
+  { number: 2, title: 'Contact & Profile' },
+  { number: 3, title: 'Membership & Goals' },
+  { number: 4, title: 'Business Capabilities' },
+  { number: 5, title: 'Council Engagement' },
+  { number: 6, title: 'Final Details' },
+] as const
+
+export const APPLY_INTRO = {
+  title: 'Membership Application Form',
+  tagline:
+    'Join the African Trade Chamber network to connect with businesses across the continent, access exclusive resources, and contribute to advancing trade and economic development in Africa.',
+  note: 'Please complete all sections of this form. Fields marked with * are required.',
+}

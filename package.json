@@ -2,25 +2,46 @@
   "name": "atc-website",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -p 3002",
+    "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "lint": "next lint",
+    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "generate:types": "payload generate:types",
+    "migrate:wp": "tsx scripts/migrate-from-wp.ts",
+    "migrate:news": "tsx scripts/migrate-news-from-wp.ts",
+    "migrate:team": "tsx scripts/migrate-team-from-wp.ts",
+    "seed": "tsx scripts/seed.ts",
+    "reset-admin": "tsx scripts/reset-admin.ts"
   },
   "dependencies": {
-    "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.35"
+    "@payloadcms/db-postgres": "3.84.1",
+    "@payloadcms/next": "3.84.1",
+    "@payloadcms/richtext-lexical": "3.84.1",
+    "cross-env": "^7.0.3",
+    "framer-motion": "^11.11.0",
+    "graphql": "^16.9.0",
+    "next": "15.4.11",
+    "payload": "3.84.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@types/jsdom": "^28.0.3",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
+    "eslint": "^8",
+    "eslint-config-next": "15.4.11",
+    "fast-xml-parser": "^4.5.6",
+    "jsdom": "^29.1.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.35"
+    "tsx": "^4.19.0",
+    "typescript": "^5"
   }
 }

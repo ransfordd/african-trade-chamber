@@ -1,0 +1,188 @@
+import type { CountryOfficesPageData } from '@/types/country-offices'
+
+export const defaultCountryOfficesPage: CountryOfficesPageData = {
+  pageTitle: 'Regional Network & Country Offices',
+  pageSubtitle:
+    'ATC maintains a growing network of country offices across Africa to provide localized support, engage national stakeholders, and implement our programs more effectively. These offices serve as key contact points for market entry assistance, partnerships, trade missions, and policy dialogue in each country.',
+  offices: [
+    {
+      slug: 'ghana',
+      flag: '🇬🇭',
+      countryName: 'Ghana',
+      regionLabel: 'West Africa Hub',
+      headerTheme: 'ghana',
+      officeStatus: 'headquarters',
+      officeStatusLabel: 'Headquarters',
+      contacts: [
+        { type: 'location', value: 'Accra - Continental HQ' },
+        { type: 'phone', value: '+233505366251' },
+        { type: 'email', value: 'info@africantradechamber.org' },
+      ],
+      events: [
+        { title: 'West Africa Trade Mission', status: 'planning', statusLabel: 'In Development' },
+        { title: 'Regional Chamber Summit', status: 'planning', statusLabel: 'Q2 2025' },
+      ],
+      learnMoreUrl: '/country-offices/ghana',
+    },
+    {
+      slug: 'drc',
+      flag: '🇨🇩',
+      countryName: 'DRC',
+      regionLabel: 'Central Africa',
+      headerTheme: 'drc',
+      officeStatus: 'active',
+      officeStatusLabel: 'Active',
+      contacts: [
+        { type: 'location', value: 'Kinshasa' },
+        { type: 'phone', value: '+243 811 971 504' },
+        { type: 'email', value: 'drc@africantradechamber.org' },
+      ],
+      events: [
+        { title: 'ATC DRC Office Launch', status: 'confirmed', statusLabel: 'Operational' },
+        { title: 'Central Africa Mission', status: 'planning', statusLabel: 'Inbound' },
+      ],
+    },
+    {
+      slug: 'kenya',
+      flag: '🇰🇪',
+      countryName: 'Kenya',
+      regionLabel: 'East Africa Gateway',
+      headerTheme: 'kenya',
+      officeStatus: 'development',
+      officeStatusLabel: 'In Development',
+      contacts: [
+        { type: 'location', value: 'Nairobi' },
+        { type: 'phone', value: '+254 702 390040' },
+        { type: 'email', value: 'info@africantradechamber.org' },
+      ],
+      events: [
+        { title: 'ATC Kenya Office Launch', status: 'development', statusLabel: 'Planning Phase' },
+        { title: 'East Africa Trade Mission', status: 'planning', statusLabel: 'Coming Soon' },
+      ],
+      learnMoreUrl: '/country-offices/kenya',
+    },
+    {
+      slug: 'nigeria',
+      flag: '🇳🇬',
+      countryName: 'Nigeria',
+      regionLabel: 'Economic Powerhouse',
+      headerTheme: 'nigeria',
+      officeStatus: 'development',
+      officeStatusLabel: 'Acquisition Process',
+      contacts: [
+        { type: 'location', value: 'Lagos/Abuja' },
+        { type: 'note', value: 'Planning Phase' },
+      ],
+      events: [
+        { title: 'ATC Nigeria Office Launch', status: 'planning', statusLabel: 'Q3 2025' },
+        { title: 'West Africa Trade Mission', status: 'planning', statusLabel: 'Inbound Focus' },
+      ],
+      learnMoreUrl: '/country-offices/nigeria',
+    },
+    {
+      slug: 'south-africa',
+      flag: '🇿🇦',
+      countryName: 'South Africa',
+      regionLabel: 'Southern Hub',
+      headerTheme: 'south-africa',
+      officeStatus: 'development',
+      officeStatusLabel: 'Acquisition Process',
+      contacts: [
+        { type: 'location', value: 'Johannesburg/Cape Town' },
+        { type: 'note', value: 'Strategic Planning' },
+      ],
+      events: [
+        { title: 'ATC South Africa Launch', status: 'planning', statusLabel: 'Development' },
+        { title: 'Southern Africa Chamber', status: 'planning', statusLabel: 'Regional Focus' },
+      ],
+      learnMoreUrl: '/country-offices/south-africa',
+    },
+    {
+      slug: 'egypt',
+      flag: '🇪🇬',
+      countryName: 'Egypt',
+      regionLabel: 'North Africa Gateway',
+      headerTheme: 'egypt',
+      officeStatus: 'development',
+      officeStatusLabel: 'Acquisition Process',
+      contacts: [
+        { type: 'location', value: 'Cairo' },
+        { type: 'note', value: 'Market Assessment' },
+      ],
+      events: [
+        { title: 'Egypt Office Launch', status: 'planning', statusLabel: 'Assessment' },
+        { title: 'North Africa Mission', status: 'planning', statusLabel: 'Future Phase' },
+      ],
+    },
+    {
+      slug: 'liberia',
+      flag: '🇱🇷',
+      countryName: 'Liberia',
+      regionLabel: 'West Africa',
+      headerTheme: 'liberia',
+      officeStatus: 'development',
+      officeStatusLabel: 'Development Phase',
+      contacts: [
+        { type: 'location', value: 'Monrovia' },
+        { type: 'note', value: 'Initial Planning' },
+      ],
+      events: [
+        { title: 'ATC Liberia Launch', status: 'planning', statusLabel: 'Development' },
+        { title: 'Trade Mission', status: 'planning', statusLabel: 'Outbound' },
+      ],
+      learnMoreUrl: '/country-offices/liberia',
+    },
+    {
+      slug: 'sao-tome',
+      flag: '🇸🇹',
+      countryName: 'São Tomé',
+      regionLabel: 'Island Nations',
+      headerTheme: 'sao-tome',
+      officeStatus: 'planning',
+      officeStatusLabel: 'Planning',
+      contacts: [
+        { type: 'location', value: 'São Tomé' },
+        { type: 'note', value: 'Initial Assessment' },
+      ],
+      events: [
+        { title: 'São Tomé Office Launch', status: 'planning', statusLabel: 'Planning' },
+        { title: 'Lusophone Mission', status: 'planning', statusLabel: 'Cultural Focus' },
+      ],
+      learnMoreUrl: '/country-offices/sao-tome',
+    },
+    {
+      slug: 'morocco',
+      flag: '🇲🇦',
+      countryName: 'Morocco',
+      regionLabel: 'North Africa',
+      headerTheme: 'morocco',
+      officeStatus: 'planning',
+      officeStatusLabel: 'Assessment',
+      contacts: [
+        { type: 'location', value: 'Casablanca/Rabat' },
+        { type: 'note', value: 'Market Assessment' },
+      ],
+      events: [
+        { title: 'Morocco Office Launch', status: 'planning', statusLabel: 'Assessment' },
+        { title: 'Maghreb Trade Mission', status: 'planning', statusLabel: 'Future Phase' },
+      ],
+    },
+    {
+      slug: 'ethiopia',
+      flag: '🇪🇹',
+      countryName: 'Ethiopia',
+      regionLabel: 'Horn of Africa',
+      headerTheme: 'ethiopia',
+      officeStatus: 'planning',
+      officeStatusLabel: 'Market Study',
+      contacts: [
+        { type: 'location', value: 'Addis Ababa' },
+        { type: 'note', value: 'Market Study' },
+      ],
+      events: [
+        { title: 'Ethiopia Office Launch', status: 'planning', statusLabel: 'Market Study' },
+        { title: 'Horn Africa Mission', status: 'planning', statusLabel: 'Regional' },
+      ],
+    },
+  ],
+}

@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: atc
+      POSTGRES_PASSWORD: atc_secret
+      POSTGRES_DB: atc_website
+    # Host 5433 avoids conflict with Windows/local Postgres on 5432
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Optional: run app in Docker (Coolify may build from Dockerfile instead)
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URI: postgresql://atc:atc_secret@postgres:5432/atc_website
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:-http://localhost:3000}
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

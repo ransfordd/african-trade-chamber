@@ -1,4 +1,219 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
+import { withPayload } from '@payloadcms/next/withPayload'
 
-export default nextConfig;
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'standalone',
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'africantradechamber.org',
+        pathname: '/wp-content/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'africantradechamber.org',
+        pathname: '/wp-content/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'flagcdn.com',
+        pathname: '/**',
+      },
+    ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/wp-content/uploads/:path*',
+        destination: '/uploads/:path*',
+      },
+    ]
+  },
+  async redirects() {
+    return [
+      {
+        source: '/future-trade-leaders-fellowship-community-2025',
+        destination: '/fellowship/2025',
+        permanent: true,
+      },
+      {
+        source: '/future-trade-leaders-fellowship-community-2025/',
+        destination: '/fellowship/2025',
+        permanent: true,
+      },
+      {
+        source: '/membership-registration',
+        destination: '/membership/apply',
+        permanent: true,
+      },
+      {
+        source: '/membership-registration/',
+        destination: '/membership/apply',
+        permanent: true,
+      },
+      {
+        source: '/2026-future-trade-leaders-fellowship-application-form',
+        destination: '/fellowship/apply',
+        permanent: true,
+      },
+      {
+        source: '/2026-future-trade-leaders-fellowship-application-form/',
+        destination: '/fellowship/apply',
+        permanent: true,
+      },
+      {
+        source: '/future-trade-leaders-fellowship',
+        destination: '/fellowship',
+        permanent: true,
+      },
+      {
+        source: '/future-trade-leaders-fellowship/',
+        destination: '/fellowship',
+        permanent: true,
+      },
+      {
+        source: '/careers-opportunities',
+        destination: '/careers',
+        permanent: true,
+      },
+      {
+        source: '/careers-opportunities/',
+        destination: '/careers',
+        permanent: true,
+      },
+      {
+        source: '/donate/',
+        destination: '/donate',
+        permanent: true,
+      },
+      {
+        source: '/volunteer/',
+        destination: '/volunteer',
+        permanent: true,
+      },
+      {
+        source: '/partnerships/',
+        destination: '/partnerships',
+        permanent: true,
+      },
+      {
+        source: '/get-involved/',
+        destination: '/get-involved',
+        permanent: true,
+      },
+      {
+        source: '/about-us',
+        destination: '/about',
+        permanent: true,
+      },
+      {
+        source: '/about-us/',
+        destination: '/about',
+        permanent: true,
+      },
+      {
+        source: '/chamber-news.html',
+        destination: '/news',
+        permanent: true,
+      },
+      {
+        source: '/member-news.html',
+        destination: '/news?category=member',
+        permanent: true,
+      },
+      {
+        source: '/press-releases.html',
+        destination: '/news?category=press',
+        permanent: true,
+      },
+      {
+        source: '/market-support/',
+        destination: '/market-support',
+        permanent: true,
+      },
+      {
+        source: '/trade-facilitation-expansion/',
+        destination: '/trade-facilitation-expansion',
+        permanent: true,
+      },
+      {
+        source: '/b2b-b2g-matchmaking/',
+        destination: '/b2b-b2g-matchmaking',
+        permanent: true,
+      },
+      {
+        source: '/investment-promotion/',
+        destination: '/investment-promotion',
+        permanent: true,
+      },
+      {
+        source: '/policy-government-engagement/',
+        destination: '/policy-government-engagement',
+        permanent: true,
+      },
+      {
+        source: '/capacity-building/',
+        destination: '/capacity-building',
+        permanent: true,
+      },
+      {
+        source: '/africa-trade-summit',
+        destination: '/events/africa-trade-summit',
+        permanent: true,
+      },
+      {
+        source: '/africa-trade-summit/',
+        destination: '/events/africa-trade-summit',
+        permanent: true,
+      },
+      {
+        source: '/trade-missions-investment-events',
+        destination: '/events/trade-missions',
+        permanent: true,
+      },
+      {
+        source: '/trade-missions-investment-events/',
+        destination: '/events/trade-missions',
+        permanent: true,
+      },
+      {
+        source: '/calendar-of-events',
+        destination: '/events/calendar',
+        permanent: true,
+      },
+      {
+        source: '/calendar-of-events/',
+        destination: '/events/calendar',
+        permanent: true,
+      },
+      {
+        source: '/atc-event',
+        destination: '/events',
+        permanent: true,
+      },
+      {
+        source: '/atc-event/',
+        destination: '/events',
+        permanent: true,
+      },
+      {
+        source: '/sponsorship',
+        destination: '/events/sponsorship',
+        permanent: true,
+      },
+      {
+        source: '/sponsorship/',
+        destination: '/events/sponsorship',
+        permanent: true,
+      },
+    ]
+  },
+}
+
+export default withPayload(nextConfig)
