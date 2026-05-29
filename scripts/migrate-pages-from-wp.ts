@@ -1,8 +1,8 @@
 /**
- * Import WordPress insight posts (standard posts with insight categories) into Payload.
+ * Import WordPress pages (post_type: page) into Payload.
  *
  * Usage:
- *   npm run migrate:insights -- data/africantradechamber.WordPress.2026-05-26.xml
+ *   npm run migrate:pages -- data/africantradechamber.WordPress.2026-05-26.xml
  */
 
 import './load-env.js'
@@ -16,19 +16,18 @@ import { getPayload } from 'payload'
 import config from '../src/payload.config'
 import { requireEnv } from './load-env.js'
 import { sanitizeWpHtmlForLexical } from './sanitize-wp-html.js'
-import { wpUploadUrlToLocal } from '../src/lib/wp-uploads.js'
-import type { InsightCategory } from '../src/types/insight-article.js'
+import { isReservedTopLevelRoute } from '../src/lib/reserved-top-level-routes.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DATA_DIR = path.resolve(__dirname, '../data')
 
 const EXCERPT_MAX = 200
 
-const WP_CATEGORY_TO_INSIGHT: Record<string, InsightCategory> = {
-  'sector-reports': 'sector-report',
-  'market-brief': 'trade-market-brief',
-  'investment-landscape': 'investment-snapshot',
-  'atc-policy-brief': 'policy-paper',
+type WpPageRow = {
+  title: string
+  slug: string
+  excerpt?: string
+  contentHtml?: string
 }
 
 function resolveExportPath(): string {
@@ -51,18 +50,6 @@ function resolveExportPath(): string {
 
   if (xmlFiles.length) return xmlFiles[0].full
   return path.join(DATA_DIR, 'wp-export.xml')
-}
-
-type WpInsightRow = {
-  title: string
-  slug: string
-  excerpt?: string
-  contentHtml?: string
-  publishedAt?: string
-  category: InsightCategory
-  author?: string
-  imageUrl?: string
-  originalUrl?: string
 }
 
 function asArray<T>(value: T | T[] | undefined | null): T[] {
@@ -89,35 +76,7 @@ function truncateExcerpt(text: string): string {
   return `${t.slice(0, EXCERPT_MAX)}...`
 }
 
-function parseWpDate(raw: string): string | undefined {
-  if (!raw) return undefined
-  const normalized = raw.trim().replace(' ', 'T')
-  const d = new Date(normalized.includes('T') ? normalized : `${normalized}T12:00:00`)
-  if (Number.isNaN(d.getTime())) return undefined
-  return d.toISOString()
-}
-
-function mapInsightCategory(item: Record<string, unknown>): InsightCategory | undefined {
-  for (const c of asArray(item.category)) {
-    const row = c as Record<string, unknown>
-    const domain = String(row['@_domain'] ?? row.domain ?? '')
-    if (domain && domain !== 'category') continue
-    const nicename = String(row['@_nicename'] ?? '').toLowerCase()
-    const mapped = WP_CATEGORY_TO_INSIGHT[nicename]
-    if (mapped) return mapped
-  }
-  return undefined
-}
-
-function getMeta(item: Record<string, unknown>, key: string): string {
-  for (const m of asArray(item['wp:postmeta'])) {
-    const row = m as Record<string, unknown>
-    if (textVal(row['wp:meta_key']) === key) return textVal(row['wp:meta_value'])
-  }
-  return ''
-}
-
-function parseItems(xml: string): { insights: WpInsightRow[]; attachments: Map<string, string> } {
+function parseItems(xml: string): WpPageRow[] {
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
@@ -135,26 +94,11 @@ function parseItems(xml: string): { insights: WpInsightRow[]; attachments: Map<s
   const channel = parsed?.rss?.channel ?? parsed?.channel
   const items = asArray(channel?.item) as Record<string, unknown>[]
 
-  const attachments = new Map<string, string>()
-  const insights: WpInsightRow[] = []
+  const pages: WpPageRow[] = []
 
   for (const item of items) {
-    const postType = textVal(item['wp:post_type'])
-    const postId = textVal(item['wp:post_id'])
-
-    if (postType === 'attachment') {
-      const url = textVal(item['wp:attachment_url']) || textVal(item['link'])
-      if (postId && url) attachments.set(postId, url)
-      continue
-    }
-
-    if (postType !== 'post') continue
-
-    const status = textVal(item['wp:status'])
-    if (status && status !== 'publish') continue
-
-    const category = mapInsightCategory(item)
-    if (!category) continue
+    if (textVal(item['wp:post_type']) !== 'page') continue
+    if (textVal(item['wp:status']) !== 'publish') continue
 
     const title = textVal(item.title)
     const slug = textVal(item['wp:post_name'])
@@ -168,26 +112,15 @@ function parseItems(xml: string): { insights: WpInsightRow[]; attachments: Map<s
         ? truncateExcerpt(stripHtml(contentHtml))
         : undefined
 
-    const publishedAt =
-      parseWpDate(textVal(item['wp:post_date'])) || parseWpDate(textVal(item.pubDate))
-
-    const thumbId = getMeta(item, '_thumbnail_id')
-    const imageUrl = thumbId ? wpUploadUrlToLocal(attachments.get(thumbId)) : undefined
-
-    insights.push({
+    pages.push({
       title,
       slug,
       excerpt,
       contentHtml: contentHtml || undefined,
-      publishedAt,
-      category,
-      author: textVal(item['dc:creator']) || undefined,
-      imageUrl,
-      originalUrl: textVal(item.link) || undefined,
     })
   }
 
-  return { insights, attachments }
+  return pages
 }
 
 async function main() {
@@ -195,7 +128,7 @@ async function main() {
   requireEnv('PAYLOAD_SECRET')
 
   const exportPath = resolveExportPath()
-  console.log('WordPress insights → Payload import')
+  console.log('WordPress pages → Payload import')
   console.log('Using export:', exportPath)
 
   if (!fs.existsSync(exportPath)) {
@@ -204,11 +137,11 @@ async function main() {
   }
 
   const xml = fs.readFileSync(exportPath, 'utf-8')
-  const { insights } = parseItems(xml)
-  console.log(`Parsed ${insights.length} published insight posts`)
+  const pages = parseItems(xml)
+  console.log(`Parsed ${pages.length} published WordPress pages`)
 
-  if (!insights.length) {
-    console.log('No insight posts found.')
+  if (!pages.length) {
+    console.log('No pages found.')
     process.exit(0)
   }
 
@@ -238,46 +171,60 @@ async function main() {
 
   let created = 0
   let updated = 0
+  let skippedReserved = 0
+  let contentSkipped = 0
 
-  for (const row of insights) {
+  for (const row of pages) {
     const content = row.contentHtml ? htmlToLexical(row.contentHtml) : undefined
+    if (row.contentHtml && !content) contentSkipped++
 
     const data = {
       title: row.title,
       slug: row.slug,
       excerpt: row.excerpt,
       ...(content ? { content } : {}),
-      category: row.category,
-      publishedAt: row.publishedAt,
-      author: row.author,
-      imageUrl: row.imageUrl,
-      originalUrl: row.originalUrl,
     }
 
     const existing = await payload.find({
-      collection: 'insights',
+      collection: 'pages',
       where: { slug: { equals: row.slug } },
       limit: 1,
     })
 
-    if (existing.docs[0]) {
-      try {
+    try {
+      if (existing.docs[0]) {
         await payload.update({
-          collection: 'insights',
+          collection: 'pages',
           id: existing.docs[0].id,
           data,
         })
         updated++
-      } catch (err) {
-        console.warn(`Failed to update insight "${row.slug}":`, err instanceof Error ? err.message : err)
+      } else {
+        await payload.create({
+          collection: 'pages',
+          data,
+        })
+        created++
       }
-    } else {
-      await payload.create({
-        collection: 'insights',
-        data,
-      })
-      created++
+
+      if (isReservedTopLevelRoute(row.slug)) {
+        skippedReserved++
+        console.log(
+          `  Note: /${row.slug} is imported in admin but the Next.js static route takes precedence on the frontend.`,
+        )
+      }
+    } catch (err) {
+      console.warn(`Failed to import page "${row.slug}":`, err instanceof Error ? err.message : err)
     }
+  }
+
+  if (contentSkipped) {
+    console.log(`Warning: ${contentSkipped} pages had HTML but Lexical conversion failed`)
+  }
+  if (skippedReserved) {
+    console.log(
+      `${skippedReserved} page(s) overlap with static Next.js routes (still visible in admin).`,
+    )
   }
 
   console.log(`Done: ${created} created, ${updated} updated`)

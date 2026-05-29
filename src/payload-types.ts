@@ -205,6 +205,8 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
   sessions?:
     | {
         id: string;
@@ -235,6 +237,8 @@ export interface Media {
   focalY?: number | null;
 }
 /**
+ * Generic CMS pages served at /{slug}. Main site sections (About, Contact, etc.) are edited under Globals.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
@@ -668,6 +672,8 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
   sessions?:
     | T
     | {

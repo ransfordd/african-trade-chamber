@@ -5,6 +5,9 @@ export const Pages: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
+    group: 'Content',
+    description:
+      'Generic CMS pages served at /{slug}. Main site sections (About, Contact, etc.) are edited under Globals.',
   },
   fields: [
     {

@@ -3,7 +3,8 @@ import type { CollectionConfig } from 'payload'
 export const Users: CollectionConfig = {
   slug: 'users',
   auth: {
-    maxLoginAttempts: process.env.NODE_ENV === 'development' ? 0 : 5,
+    // Keep lock columns in the schema (maxLoginAttempts: 0 drops them and triggers interactive push prompts).
+    maxLoginAttempts: process.env.NODE_ENV === 'development' ? 999 : 5,
     lockTime: 600 * 1000,
   },
   admin: {

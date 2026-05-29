@@ -13,10 +13,12 @@
     "migrate:wp": "tsx scripts/migrate-from-wp.ts",
     "migrate:news": "tsx scripts/migrate-news-from-wp.ts",
     "migrate:insights": "tsx scripts/migrate-insights-from-wp.ts",
+    "migrate:pages": "tsx scripts/migrate-pages-from-wp.ts",
     "migrate:team": "tsx scripts/migrate-team-from-wp.ts",
     "generate:redirects": "tsx scripts/generate-wp-redirects.ts",
     "seed": "tsx scripts/seed.ts",
-    "reset-admin": "tsx scripts/reset-admin.ts"
+    "reset-admin": "tsx scripts/reset-admin.ts",
+    "verify:admin": "tsx scripts/verify-admin.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.84.1",
