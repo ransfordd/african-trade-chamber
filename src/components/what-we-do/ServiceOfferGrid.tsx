@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import type { ServiceOfferBlock } from '@/types/what-we-do'
 import { GoldDotList } from '@/components/what-we-do/BulletList'
+import { isLocalImage } from '@/lib/image-url'
 
 type Props = {
   offers: ServiceOfferBlock[]
@@ -28,6 +29,7 @@ export function ServiceOfferGrid({ offers, columns = 4 }: Props) {
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 25vw"
+                unoptimized={!isLocalImage(offer.imageUrl)}
               />
             </div>
           ) : null}

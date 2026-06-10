@@ -1,11 +1,30 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 import { wpRedirects } from './redirects/wp-redirects.mjs'
 
+function serverMediaPattern() {
+  const url = process.env.NEXT_PUBLIC_SERVER_URL
+  if (!url) return null
+  try {
+    const parsed = new URL(url)
+    return {
+      protocol: parsed.protocol.replace(':', ''),
+      hostname: parsed.hostname,
+      ...(parsed.port ? { port: parsed.port } : {}),
+      pathname: '/api/media/file/**',
+    }
+  } catch {
+    return null
+  }
+}
+
+const deployMediaPattern = serverMediaPattern()
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
   images: {
     remotePatterns: [
+      ...(deployMediaPattern ? [deployMediaPattern] : []),
       {
         protocol: 'https',
         hostname: 'africantradechamber.org',
@@ -25,6 +44,22 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'flagcdn.com',
         pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3002',
+        pathname: '/api/media/file/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'africantradechamber.org',
+        pathname: '/api/media/file/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'africantradechamber.org',
+        pathname: '/api/media/file/**',
       },
     ],
   },

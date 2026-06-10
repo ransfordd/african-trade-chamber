@@ -218,7 +218,7 @@ export interface User {
   collection: 'users';
 }
 /**
- * Site media library — select or upload images used across pages and posts.
+ * Site media library — select or upload images used across pages and posts. Grid view hides WordPress size variants by default; search by filename to find a specific size if needed.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
@@ -229,6 +229,7 @@ export interface Media {
    * Accessibility description shown when the image cannot be displayed.
    */
   alt?: string | null;
+  isHiddenVariant?: boolean | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -318,6 +319,14 @@ export interface News {
   newsDate?: string | null;
   originalUrl?: string | null;
   featured?: boolean | null;
+  /**
+   * When checked, this story replaces the first homepage hero slide. Only one story can be active at a time. Upload a Hero side image below for the right-side thumbnail.
+   */
+  showInHomeHero?: boolean | null;
+  /**
+   * Required for the right-side thumbnail on the homepage hero. Use a different image from the featured image (e.g. logo or detail shot).
+   */
+  heroSideImage?: (number | null) | Media;
   priority?: ('low' | 'medium' | 'high') | null;
   expiryDate?: string | null;
   publishedAt?: string | null;
@@ -421,6 +430,8 @@ export interface Job {
   createdAt: string;
 }
 /**
+ * Order 0 = fallback slide 1 when no news story is pinned to the homepage hero. Order 1+ = carousel slides 2, 3, and so on.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "hero-slides".
  */
@@ -446,6 +457,9 @@ export interface HeroSlide {
   sideVideoUrl?: string | null;
   showSideImage?: boolean | null;
   showApplyOnly?: boolean | null;
+  /**
+   * 0 = fallback for slide 1. 1+ = promo slides shown after slide 1.
+   */
   order?: number | null;
   enabled?: boolean | null;
   updatedAt: string;
@@ -711,6 +725,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  isHiddenVariant?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -769,6 +784,8 @@ export interface NewsSelect<T extends boolean = true> {
   newsDate?: T;
   originalUrl?: T;
   featured?: T;
+  showInHomeHero?: T;
+  heroSideImage?: T;
   priority?: T;
   expiryDate?: T;
   publishedAt?: T;

@@ -22,6 +22,7 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { HeroSlidesListBanner as HeroSlidesListBanner_4cd280be2fa9604eac7db519b57fd2ac } from '../../../components/admin/hero/HeroSlidesListBanner'
 import { AtcAdminTopBar as AtcAdminTopBar_943d05340a32fa3afb2704eddccf030f } from '../../../components/admin/AtcAdminTopBar'
 import { AtcAdminIcon as AtcAdminIcon_50e90f84ee6d282880be6dc12321f61e } from '../../../components/admin/AtcAdminIcon'
 import { AtcAdminLogo as AtcAdminLogo_904234d73253aed64c18d7b2d4ff68e4 } from '../../../components/admin/AtcAdminLogo'
@@ -56,6 +57,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/components/admin/hero/HeroSlidesListBanner#HeroSlidesListBanner": HeroSlidesListBanner_4cd280be2fa9604eac7db519b57fd2ac,
   "/components/admin/AtcAdminTopBar#AtcAdminTopBar": AtcAdminTopBar_943d05340a32fa3afb2704eddccf030f,
   "/components/admin/AtcAdminIcon#AtcAdminIcon": AtcAdminIcon_50e90f84ee6d282880be6dc12321f61e,
   "/components/admin/AtcAdminLogo#AtcAdminLogo": AtcAdminLogo_904234d73253aed64c18d7b2d4ff68e4,

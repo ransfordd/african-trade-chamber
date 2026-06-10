@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import type { HeroSlide } from '@/types/content'
+import { isLocalImage } from '@/lib/image-url'
 
 type Props = {
   slides: HeroSlide[]
@@ -59,6 +60,7 @@ function HeroSideMedia({ slide }: { slide: HeroSlide }) {
           className="object-cover transition-transform duration-500 hover:scale-105"
           sizes="(max-width: 1024px) 90vw, 450px"
           priority
+          unoptimized={!isLocalImage(slide.sideImageUrl)}
         />
       </div>
     )
@@ -137,6 +139,7 @@ export function HeroSlider({ slides }: Props) {
                     : 'object-cover object-center'
                 }
                 sizes="100vw"
+                unoptimized={!isLocalImage(active.backgroundImageUrl)}
               />
             ) : null}
 

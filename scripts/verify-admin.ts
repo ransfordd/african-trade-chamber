@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url'
 import { getPayload } from 'payload'
 import config from '../src/payload.config'
 import { requireEnv } from './load-env.js'
+import { getMediaUsageStats } from './lib/collect-used-media-ids.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
@@ -101,6 +102,111 @@ async function main() {
     newsSample.docs.length ? String(newsSample.docs[0].title) : 'not found',
   )
 
+  const newsCollection = payload.config.collections.find((c) => c.slug === 'news')
+  const hasShowInHomeHero = Boolean(
+    newsCollection?.fields?.some(
+      (f) => typeof f === 'object' && f !== null && 'name' in f && f.name === 'showInHomeHero',
+    ),
+  )
+  record(
+    'News showInHomeHero field',
+    hasShowInHomeHero,
+    hasShowInHomeHero ? 'configured' : 'missing',
+  )
+
+  const hasHeroSideImage = Boolean(
+    newsCollection?.fields?.some(
+      (f) => typeof f === 'object' && f !== null && 'name' in f && f.name === 'heroSideImage',
+    ),
+  )
+  record(
+    'News heroSideImage field',
+    hasHeroSideImage,
+    hasHeroSideImage ? 'configured' : 'missing',
+  )
+
+  try {
+    const pinnedNews = await payload.find({
+      collection: 'news',
+      where: { showInHomeHero: { equals: true } },
+      limit: 5,
+      overrideAccess: true,
+    })
+    record(
+      'News hero pin count',
+      pinnedNews.totalDocs <= 1,
+      `${pinnedNews.totalDocs} pinned (max 1)`,
+    )
+  } catch (err) {
+    record('News hero pin count', false, err instanceof Error ? err.message : String(err))
+  }
+
+  try {
+    const afdb = await payload.find({
+      collection: 'news',
+      limit: 1,
+      overrideAccess: true,
+      where: { slug: { equals: 'afdb-backs-24-5m-clean-energy-drive-in-sao-tome-and-principe' } },
+    })
+    const newsDoc = afdb.docs[0] as { id: number; showInHomeHero?: boolean } | undefined
+    if (newsDoc) {
+      const wasPinned = Boolean(newsDoc.showInHomeHero)
+      await payload.update({
+        collection: 'news',
+        id: newsDoc.id,
+        data: { showInHomeHero: true },
+        overrideAccess: true,
+      })
+      const afterPin = await payload.find({
+        collection: 'news',
+        where: { showInHomeHero: { equals: true } },
+        limit: 5,
+        overrideAccess: true,
+      })
+      await payload.update({
+        collection: 'news',
+        id: newsDoc.id,
+        data: { showInHomeHero: wasPinned },
+        overrideAccess: true,
+      })
+      record(
+        'News hero pin hook',
+        afterPin.totalDocs === 1,
+        afterPin.totalDocs === 1 ? 'single pin enforced' : `${afterPin.totalDocs} pinned after hook`,
+      )
+    } else {
+      record('News hero pin hook', false, 'AfDB news post not found')
+    }
+  } catch (err) {
+    record('News hero pin hook', false, err instanceof Error ? err.message : String(err))
+  }
+
+  const heroSlidesCollection = payload.config.collections.find((c) => c.slug === 'hero-slides')
+  const heroBeforeList = heroSlidesCollection?.admin?.components?.beforeList?.[0]
+  record(
+    'Hero slides list banner',
+    heroBeforeList === '/components/admin/hero/HeroSlidesListBanner#HeroSlidesListBanner',
+    typeof heroBeforeList === 'string' ? heroBeforeList : 'missing beforeList component',
+  )
+
+  const hasHiddenVariantField = Boolean(
+    mediaCollection?.fields?.some(
+      (f) => typeof f === 'object' && f !== null && 'name' in f && f.name === 'isHiddenVariant',
+    ),
+  )
+  record(
+    'Media isHiddenVariant field',
+    hasHiddenVariantField,
+    hasHiddenVariantField ? 'configured' : 'missing',
+  )
+
+  const mediaBaseListFilter = mediaCollection?.admin?.baseListFilter
+  record(
+    'Media variant list filter',
+    typeof mediaBaseListFilter === 'function',
+    typeof mediaBaseListFilter === 'function' ? 'baseListFilter set' : 'missing',
+  )
+
   // Insights agribusiness body
   const insight = await payload.find({
     collection: 'insights',
@@ -176,6 +282,17 @@ async function main() {
     `${mediaCount.totalDocs} document(s) (run npm run media:import-uploads to bulk-import public images)`,
   )
 
+  try {
+    const usage = await getMediaUsageStats(payload)
+    record(
+      'Media usage scan',
+      usage.usedCount > 0,
+      `${usage.usedCount} used / ${usage.unusedCount} unused of ${usage.totalMedia} total`,
+    )
+  } catch (err) {
+    record('Media usage scan', false, err instanceof Error ? err.message : String(err))
+  }
+
   // Legacy URL → Media library linking
   try {
     const wwd = await payload.findGlobal({ slug: 'wwd-homepage', depth: 0, overrideAccess: true })
@@ -238,6 +355,8 @@ async function main() {
   )
   const testFilePath = path.join(mediaDir, 'verify-admin-test.png')
   fs.writeFileSync(testFilePath, testPng)
+  let testMediaId: number | undefined
+  let testSavedFilename: string | undefined
   try {
     const mediaDoc = await payload.create({
       collection: 'media',
@@ -245,16 +364,39 @@ async function main() {
       filePath: testFilePath,
       overrideAccess: true,
     })
-    const savedPath = path.join(mediaDir, (mediaDoc as { filename?: string }).filename ?? '')
+    testMediaId = (mediaDoc as { id: number }).id
+    testSavedFilename = (mediaDoc as { filename?: string }).filename
+    const savedPath = path.join(mediaDir, testSavedFilename ?? '')
     record(
       'Media upload',
       fs.existsSync(savedPath),
-      (mediaDoc as { filename?: string }).filename ?? 'created',
+      testSavedFilename ?? 'created',
     )
   } catch (err) {
     record('Media upload', false, err instanceof Error ? err.message : String(err))
   } finally {
     if (fs.existsSync(testFilePath)) fs.unlinkSync(testFilePath)
+    if (testMediaId != null) {
+      try {
+        await payload.delete({
+          collection: 'media',
+          id: testMediaId,
+          overrideAccess: true,
+        })
+      } catch {
+        /* ignore cleanup failure */
+      }
+    }
+    if (testSavedFilename) {
+      const savedPath = path.join(mediaDir, testSavedFilename)
+      if (fs.existsSync(savedPath)) {
+        try {
+          fs.unlinkSync(savedPath)
+        } catch {
+          /* ignore cleanup failure */
+        }
+      }
+    }
   }
 
   // Team members category coverage
@@ -294,6 +436,32 @@ async function main() {
 
   // HTTP: admin shell + public form API (requires dev server on NEXT_PUBLIC_SERVER_URL)
   const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3002'
+
+  try {
+    const mediaSample = await payload.find({
+      collection: 'media',
+      limit: 1,
+      overrideAccess: true,
+      where: { filename: { exists: true } },
+    })
+    const filename = (mediaSample.docs[0] as { filename?: string } | undefined)?.filename
+    if (filename) {
+      const mediaRes = await fetch(
+        `${baseUrl}/api/media/file/${encodeURIComponent(filename)}`,
+        { signal: AbortSignal.timeout(120_000) },
+      )
+      record(
+        'HTTP public media file',
+        mediaRes.status === 200,
+        mediaRes.status === 200 ? filename : `status ${mediaRes.status} (${filename})`,
+      )
+    } else {
+      record('HTTP public media file', false, 'no media doc with filename found')
+    }
+  } catch (err) {
+    record('HTTP public media file', false, err instanceof Error ? err.message : String(err))
+  }
+
   try {
     const adminRes = await fetch(`${baseUrl}/admin`, { signal: AbortSignal.timeout(240_000) })
     const adminHtml = await adminRes.text()

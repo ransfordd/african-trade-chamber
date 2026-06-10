@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import type { ServiceFooterBlock as FooterData } from '@/types/what-we-do'
 import { GoldDotList } from '@/components/what-we-do/BulletList'
+import { isLocalImage } from '@/lib/image-url'
 
 type Props = {
   block: FooterData
@@ -17,6 +18,7 @@ export function ServiceFooterBlock({ block }: Props) {
             fill
             className="object-cover"
             sizes="(max-width: 1200px) 100vw, 1200px"
+            unoptimized={!isLocalImage(block.imageUrl)}
           />
         </div>
       ) : null}

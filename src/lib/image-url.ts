@@ -4,6 +4,10 @@ export function isWpMediaUrl(url?: string | null): boolean {
   return url.includes('africantradechamber.org')
 }
 
+export function isPayloadMediaUrl(url?: string | null): boolean {
+  return Boolean(url?.startsWith('/api/media/'))
+}
+
 /** Prefer local `/images/...` or non-WP URLs for next/image. */
 export function resolveImageUrl(
   url: string | undefined,
@@ -15,6 +19,7 @@ export function resolveImageUrl(
   return url
 }
 
+/** Static public paths safe for next/image optimization (excludes Payload API URLs). */
 export function isLocalImage(url: string): boolean {
-  return url.startsWith('/')
+  return url.startsWith('/') && !isPayloadMediaUrl(url)
 }

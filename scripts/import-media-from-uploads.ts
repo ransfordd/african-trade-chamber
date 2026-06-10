@@ -13,6 +13,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { getPayload } from 'payload'
 import config from '../src/payload.config'
+import { isWordPressSizeVariant, wordPressVariantStem } from '../src/lib/media-filename-utils.js'
 import { requireEnv } from './load-env.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -73,6 +74,25 @@ function safeDestName(key: string, used: Set<string>): string {
   return candidate
 }
 
+function folderStemKey(fileKey: string, filename: string): string {
+  const dir = path.posix.dirname(fileKey.replace(/\\/g, '/'))
+  const stem = isWordPressSizeVariant(filename)
+    ? wordPressVariantStem(filename)
+    : path.basename(filename, path.extname(filename))
+  return `${dir}/${stem}`.toLowerCase()
+}
+
+function buildOriginalStemKeys(files: Array<{ key: string }>): Set<string> {
+  const keys = new Set<string>()
+  for (const file of files) {
+    const filename = path.basename(file.key)
+    if (!isWordPressSizeVariant(filename)) {
+      keys.add(folderStemKey(file.key, filename))
+    }
+  }
+  return keys
+}
+
 async function loadExistingFilenames(payload: Awaited<ReturnType<typeof getPayload>>) {
   const filenames = new Set<string>()
   const keys = new Set<string>()
@@ -116,6 +136,7 @@ async function main() {
 
   files.sort((a, b) => a.key.localeCompare(b.key))
   const toProcess = limit > 0 ? files.slice(0, limit) : files
+  const originalStemKeys = buildOriginalStemKeys(files)
 
   console.log(`Found ${files.length} image(s); processing ${toProcess.length}${dryRun ? ' (dry run)' : ''}`)
 
@@ -129,6 +150,15 @@ async function main() {
 
   for (const file of toProcess) {
     if (existingKeys.has(file.key)) {
+      skipped += 1
+      continue
+    }
+
+    const basename = path.basename(file.key)
+    if (
+      isWordPressSizeVariant(basename) &&
+      originalStemKeys.has(folderStemKey(file.key, basename))
+    ) {
       skipped += 1
       continue
     }

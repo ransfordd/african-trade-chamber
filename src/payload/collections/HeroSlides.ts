@@ -7,6 +7,11 @@ export const HeroSlides: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'order', 'enabled'],
     group: 'Homepage',
+    description:
+      'Order 0 = fallback slide 1 when no news story is pinned to the homepage hero. Order 1+ = carousel slides 2, 3, and so on.',
+    components: {
+      beforeList: ['/components/admin/hero/HeroSlidesListBanner#HeroSlidesListBanner'],
+    },
   },
   fields: [
     { name: 'title', type: 'text', required: true },
@@ -20,7 +25,14 @@ export const HeroSlides: CollectionConfig = {
     { name: 'sideVideoUrl', type: 'text', admin: { description: 'MP4 URL for right-side video (slide 3)' } },
     { name: 'showSideImage', type: 'checkbox', defaultValue: true },
     { name: 'showApplyOnly', type: 'checkbox', defaultValue: false },
-    { name: 'order', type: 'number', defaultValue: 0 },
+    {
+      name: 'order',
+      type: 'number',
+      defaultValue: 0,
+      admin: {
+        description: '0 = fallback for slide 1. 1+ = promo slides shown after slide 1.',
+      },
+    },
     { name: 'enabled', type: 'checkbox', defaultValue: true },
   ],
 }

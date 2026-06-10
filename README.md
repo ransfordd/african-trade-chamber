@@ -65,20 +65,20 @@ scripts/
 ## Coolify deployment
 
 1. Push this repo to GitHub.
-2. In Coolify, create an app from the repo (Dockerfile build).
-3. Add a **PostgreSQL** service; set env vars:
+2. In Coolify, create an app from the repo (**Dockerfile** build, port **3000**).
+3. Create **PostgreSQL** named `atc-postgres` in the same environment.
+4. Set env vars (see [`coolify.env.example`](coolify.env.example) and [`docs/COOLIFY.md`](docs/COOLIFY.md)):
 
 | Variable | Description |
 |----------|-------------|
-| `DATABASE_URI` | `postgresql://user:pass@host:5432/dbname` |
+| `DATABASE_URI` | Internal Postgres URL, e.g. `postgresql://atc:pass@atc-postgres:5432/atc_website` |
 | `PAYLOAD_SECRET` | Long random secret |
-| `NEXT_PUBLIC_SERVER_URL` | Public URL, e.g. `https://staging.africantradechamber.org` |
+| `NEXT_PUBLIC_SERVER_URL` | Public app URL |
+| `AUTO_SEED` | `true` — runs seed on each container start (creates schema + content) |
+| `SEED_ADMIN_EMAIL` | Admin login email |
+| `SEED_ADMIN_PASSWORD` | Admin login password |
 
-4. Build command: `npm run build` (handled by Dockerfile).
-5. Port **3000**; health check `/`.
-6. After deploy, run seed once (Coolify one-off command or local against prod DB).
-
-`docker-compose.yml` runs Postgres locally; production DB is typically a separate Coolify Postgres resource.
+5. **Redeploy** — seed runs automatically on startup; open `/admin` to log in.
 
 See **`docs/COOLIFY.md`** for step-by-step Coolify setup.
 

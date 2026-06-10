@@ -2,6 +2,7 @@ import Image from 'next/image'
 import type { WhatWeDoHubCard } from '@/types/what-we-do'
 import { BulletList } from '@/components/what-we-do/BulletList'
 import { ViewMoreLink } from '@/components/what-we-do/ViewMoreLink'
+import { isLocalImage } from '@/lib/image-url'
 
 type Props = {
   card: WhatWeDoHubCard
@@ -20,6 +21,7 @@ export function WhatWeDoHubCard({ card, className = '' }: Props) {
           fill
           className="object-cover transition duration-500 group-hover:scale-[1.03]"
           sizes="(max-width: 768px) 100vw, 33vw"
+          unoptimized={!isLocalImage(card.imageUrl)}
         />
       </div>
       <div className="flex flex-1 flex-col p-5 sm:p-6">

@@ -114,6 +114,64 @@ export async function getPayloadClient() {
   return initPayload()
 }
 
+function isNewsHeroEligible(doc: Record<string, unknown>, now: Date): boolean {
+  const publishedAt = doc.publishedAt ? new Date(String(doc.publishedAt)) : null
+  if (publishedAt && publishedAt > now) return false
+  const expiryDate = doc.expiryDate ? new Date(String(doc.expiryDate)) : null
+  if (expiryDate && expiryDate < now) return false
+  return true
+}
+
+function mapHeroSlideDoc(doc: Record<string, unknown>, fallback?: HeroSlide): HeroSlide {
+  const backgroundImageUrl =
+    resolvePayloadMediaUrl(
+      doc.backgroundImage,
+      doc.backgroundImageUrl as string | undefined,
+      fallback?.backgroundImageUrl,
+    ) || ''
+  const sideImageUrl =
+    resolvePayloadMediaUrl(
+      doc.sideImage,
+      doc.sideImageUrl as string | undefined,
+      fallback?.sideImageUrl,
+    ) || ''
+  return {
+    id: String(doc.id),
+    title: String(doc.title ?? ''),
+    description: String(doc.description ?? ''),
+    ctaLabel: String(doc.ctaLabel ?? 'Learn more'),
+    ctaUrl: String(doc.ctaUrl ?? '/'),
+    backgroundImageUrl,
+    sideImageUrl,
+    sideVideoUrl: String(doc.sideVideoUrl ?? ''),
+    showSideImage:
+      Boolean(doc.showSideImage) || Boolean(sideImageUrl || doc.sideVideoUrl),
+    showApplyOnly: Boolean(doc.showApplyOnly),
+  }
+}
+
+function mapNewsToHeroSlide(doc: Record<string, unknown>, fallback?: HeroSlide): HeroSlide {
+  const backgroundImageUrl =
+    resolvePayloadMediaUrl(
+      doc.featuredImage,
+      doc.imageUrl as string | undefined,
+      fallback?.backgroundImageUrl,
+    ) || ''
+  const sideImageUrl = resolvePayloadMediaUrl(doc.heroSideImage) || ''
+  return {
+    id: `news-${doc.id}`,
+    title: String(doc.title ?? ''),
+    description: String(doc.excerpt ?? '').trim(),
+    ctaLabel: 'Read Full Story',
+    ctaUrl: `/news/${doc.slug}`,
+    backgroundImageUrl,
+    sideImageUrl,
+    sideVideoUrl: '',
+    showSideImage: Boolean(sideImageUrl),
+    showApplyOnly: false,
+  }
+}
+
 export async function getSiteSettings(): Promise<SiteSettingsData> {
   try {
     const payload = await getPayloadClient()
@@ -165,42 +223,52 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
   try {
     const payload = await getPayloadClient()
     if (!payload) return defaultHeroSlides
-    const result = await payload.find({
+
+    const now = new Date()
+    const slides: HeroSlide[] = []
+
+    const pinnedResult = await payload.find({
+      collection: 'news',
+      where: { showInHomeHero: { equals: true } },
+      limit: 1,
+      depth: 1,
+    })
+    const pinnedDoc = pinnedResult.docs[0] as unknown as Record<string, unknown> | undefined
+
+    if (pinnedDoc && isNewsHeroEligible(pinnedDoc, now)) {
+      slides.push(mapNewsToHeroSlide(pinnedDoc, defaultHeroSlides[0]))
+    } else {
+      const fallbackResult = await payload.find({
+        collection: 'hero-slides',
+        where: {
+          and: [{ enabled: { equals: true } }, { order: { equals: 0 } }],
+        },
+        limit: 1,
+        depth: 1,
+      })
+      const fallbackDoc = fallbackResult.docs[0] as unknown as Record<string, unknown> | undefined
+      if (fallbackDoc) {
+        slides.push(mapHeroSlideDoc(fallbackDoc, defaultHeroSlides[0]))
+      } else if (defaultHeroSlides[0]) {
+        slides.push(defaultHeroSlides[0])
+      }
+    }
+
+    const promoResult = await payload.find({
       collection: 'hero-slides',
-      where: { enabled: { equals: true } },
+      where: {
+        and: [{ enabled: { equals: true } }, { order: { greater_than: 0 } }],
+      },
       sort: 'order',
       limit: 10,
       depth: 1,
     })
-    if (!result.docs.length) return defaultHeroSlides
-    return result.docs.map((doc, i) => {
-      const fallback = defaultHeroSlides[i]
-      const backgroundImageUrl =
-        resolvePayloadMediaUrl(
-          doc.backgroundImage,
-          doc.backgroundImageUrl as string | undefined,
-          fallback?.backgroundImageUrl,
-        ) || ''
-      const sideImageUrl =
-        resolvePayloadMediaUrl(
-          doc.sideImage,
-          doc.sideImageUrl as string | undefined,
-          fallback?.sideImageUrl,
-        ) || ''
-      return {
-        id: String(doc.id),
-        title: doc.title as string,
-        description: (doc.description as string) || '',
-        ctaLabel: (doc.ctaLabel as string) || 'Learn more',
-        ctaUrl: (doc.ctaUrl as string) || '/',
-        backgroundImageUrl,
-        sideImageUrl,
-        sideVideoUrl: (doc.sideVideoUrl as string) || '',
-        showSideImage:
-          Boolean(doc.showSideImage) || Boolean(sideImageUrl || (doc.sideVideoUrl as string)),
-        showApplyOnly: Boolean(doc.showApplyOnly),
-      }
+    promoResult.docs.forEach((doc, i) => {
+      slides.push(mapHeroSlideDoc(doc as unknown as Record<string, unknown>, defaultHeroSlides[i + 1]))
     })
+
+    if (!slides.length) return defaultHeroSlides
+    return slides
   } catch {
     return defaultHeroSlides
   }

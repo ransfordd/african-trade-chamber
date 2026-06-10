@@ -3,6 +3,7 @@ import type { WhatWeDoPageData } from '@/types/what-we-do'
 import { BulletList } from '@/components/what-we-do/BulletList'
 import { ViewMoreLink } from '@/components/what-we-do/ViewMoreLink'
 import { WhatWeDoHubCard } from '@/components/what-we-do/WhatWeDoHubCard'
+import { isLocalImage } from '@/lib/image-url'
 
 type Props = {
   data: WhatWeDoPageData
@@ -24,6 +25,7 @@ export function WhatWeDoPageSection({ data }: Props) {
                 className="object-cover transition duration-500 group-hover:scale-[1.03]"
                 sizes="100vw"
                 priority
+                unoptimized={!isLocalImage(intro.imageUrl)}
               />
             </div>
             <div className="p-6 sm:p-8">
@@ -52,6 +54,7 @@ export function WhatWeDoPageSection({ data }: Props) {
                 fill
                 className="object-cover transition duration-500 group-hover:scale-[1.03]"
                 sizes="100vw"
+                unoptimized={!isLocalImage(capacityBuilding.imageUrl)}
               />
             </div>
             <div className="p-6 sm:p-8">
@@ -73,6 +76,7 @@ export function WhatWeDoPageSection({ data }: Props) {
                     fill
                     className="object-cover transition duration-500 group-hover:scale-[1.03]"
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    unoptimized={!isLocalImage(card.imageUrl)}
                   />
                 </div>
                 <div className="flex flex-1 flex-col p-5 sm:p-6">

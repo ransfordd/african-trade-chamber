@@ -7,8 +7,8 @@ export function payloadMediaUrl(media: unknown): string | undefined {
   const url = row.url as string | undefined
   if (!url) return undefined
   if (url.startsWith('http')) return url
-  const base = (process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3002').replace(/\/$/, '')
-  return `${base}${url.startsWith('/') ? url : `/${url}`}`
+  if (url.startsWith('/')) return url
+  return `/${url}`
 }
 
 export function payloadMediaAlt(media: unknown, fallback = ''): string {

@@ -20,6 +20,8 @@
     "reset-admin": "tsx scripts/reset-admin.ts",
     "verify:admin": "tsx scripts/verify-admin.ts",
     "media:import-uploads": "tsx scripts/import-media-from-uploads.ts",
+    "media:tag-variants": "tsx scripts/tag-media-variants.ts",
+    "media:prune-unused": "tsx scripts/prune-unused-media.ts",
     "media:link-legacy-urls": "tsx scripts/link-legacy-media-urls.ts"
   },
   "dependencies": {
@@ -27,6 +29,8 @@
     "@payloadcms/next": "3.84.1",
     "@payloadcms/richtext-lexical": "3.84.1",
     "cross-env": "^7.0.3",
+    "dotenv": "^17.4.2",
+    "tsx": "^4.19.0",
     "framer-motion": "^11.11.0",
     "graphql": "^16.9.0",
     "next": "15.4.11",
@@ -40,14 +44,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "dotenv": "^17.4.2",
     "eslint": "^8",
     "eslint-config-next": "15.4.11",
     "fast-xml-parser": "^4.5.6",
     "jsdom": "^29.1.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "tsx": "^4.19.0",
     "typescript": "^5"
   }
 }
