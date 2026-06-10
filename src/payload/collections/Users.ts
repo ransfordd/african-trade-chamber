@@ -1,4 +1,8 @@
-import type { CollectionConfig } from 'payload'
+import type { Access, CollectionConfig } from 'payload'
+
+function isAdmin({ req }: Parameters<Access>[0]): boolean {
+  return req.user?.role === 'admin'
+}
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -11,6 +15,16 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
     defaultColumns: ['email', 'firstName', 'lastName', 'role'],
     description: 'CMS administrators and editors for africantradechamber.org',
+  },
+  access: {
+    create: isAdmin,
+    delete: isAdmin,
+    read: ({ req }) => Boolean(req.user),
+    update: ({ req, id }) => {
+      if (!req.user) return false
+      if (req.user.role === 'admin') return true
+      return req.user.id === id
+    },
   },
   fields: [
     {

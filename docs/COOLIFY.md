@@ -37,8 +37,8 @@ Add these in the app **Environment Variables** section. See [`coolify.env.exampl
 | `PAYLOAD_SECRET` | Yes | 32+ char random string |
 | `NEXT_PUBLIC_SERVER_URL` | Yes | `http://your-app.sslip.io` |
 | `AUTO_SEED` | Yes | `true` (runs seed on every container start; idempotent) |
-| `SEED_ADMIN_EMAIL` | Yes | `admin@africantradechamber.org` |
-| `SEED_ADMIN_PASSWORD` | Yes | strong admin login password |
+| `SEED_ADMIN_EMAIL` | **Yes** | `admin@africantradechamber.org` — required when `AUTO_SEED=true` |
+| `SEED_ADMIN_PASSWORD` | **Yes** | strong admin login password — required when `AUTO_SEED=true` |
 
 **Never commit real passwords to git.** Set secrets only in Coolify.
 
@@ -50,6 +50,8 @@ Add these in the app **Environment Variables** section. See [`coolify.env.exampl
    - Runs `npm run seed` logic (creates DB schema + default content + admin user if missing)
    - Starts the Next.js server on port 3000
 4. Open `YOUR_URL/admin` and log in with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`
+
+New CMS users are created only by logged-in administrators (Admin → Users). Public self-registration is disabled.
 
 To skip seeding on a deploy, set `AUTO_SEED=false`.
 
@@ -70,5 +72,7 @@ Coolify webhooks redeploy on push. No extra CI required for basic deploys.
 - **Admin 500 / `users does not exist`:** Check `DATABASE_URI` points to `atc-postgres` and redeploy (seed runs on start)
 - **Seed skipped in logs:** `DATABASE_URI` or `PAYLOAD_SECRET` missing in Coolify env vars
 - **Seed fails / tables missing:** Seed runs with `NODE_ENV=development` so Payload can push schema (push is disabled in production). Check Postgres connectivity.
+- **`/admin/create-first-user` or "Admin access is restricted":** No admin user in the database. Set `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` in Coolify and redeploy. Check logs for `Created admin user`.
+- **Deploy fails at seed:** With `AUTO_SEED=true`, both `SEED_ADMIN_*` variables are required — add them and redeploy.
 - **Images broken:** Migrate media to Payload over time; `/uploads/` files are not in the repo by default
 - **Duplicate failed postgres:** Delete the red database resource; keep only `atc-postgres`

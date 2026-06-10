@@ -35,7 +35,7 @@ async function main() {
   } else {
     await payload.create({
       collection: 'users',
-      data: { email, password },
+      data: { email, password, role: 'admin' },
       overrideAccess: true,
     })
     console.log(`Created admin user: ${email}`)

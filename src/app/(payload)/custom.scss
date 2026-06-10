@@ -19,6 +19,44 @@
     text-align: center;
   }
 
+  .template-minimal .atc-create-first-user-blocked {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 auto;
+    max-width: 28rem;
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+
+  .template-minimal .atc-create-first-user-blocked__title {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+  }
+
+  .template-minimal .atc-create-first-user-blocked__body {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin: 0 0 1rem;
+  }
+
+  .template-minimal .atc-create-first-user-blocked__body code {
+    color: var(--atc-yellow);
+    font-size: 0.85em;
+  }
+
+  .template-minimal .atc-create-first-user-blocked__link {
+    color: var(--atc-yellow);
+    display: inline-block;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    text-decoration: underline;
+  }
+
+  .template-minimal .atc-create-first-user-blocked__link:hover {
+    color: var(--atc-gold);
+  }
+
   .template-minimal .field-type .field-label,
   .template-minimal .field-type label,
   .template-minimal a {

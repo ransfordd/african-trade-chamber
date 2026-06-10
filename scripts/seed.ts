@@ -420,6 +420,15 @@ async function main() {
 
   const adminEmail = process.env.SEED_ADMIN_EMAIL?.trim()
   const adminPassword = process.env.SEED_ADMIN_PASSWORD?.trim()
+  const autoSeed = process.env.AUTO_SEED === 'true'
+
+  if (autoSeed && (!adminEmail || !adminPassword)) {
+    console.error(
+      'AUTO_SEED=true requires SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD to be set.',
+    )
+    process.exit(1)
+  }
+
   if (adminEmail && adminPassword) {
     const existing = await payload.find({
       collection: 'users',
@@ -430,7 +439,7 @@ async function main() {
     if (!existing.docs.length) {
       await payload.create({
         collection: 'users',
-        data: { email: adminEmail, password: adminPassword },
+        data: { email: adminEmail, password: adminPassword, role: 'admin' },
         overrideAccess: true,
       })
       console.log('Created admin user:', adminEmail)
@@ -439,7 +448,7 @@ async function main() {
         `Admin user already exists (${adminEmail}). Run "npm run reset-admin" to set password from .env.`,
       )
     }
-  } else if (!adminEmail || !adminPassword) {
+  } else if (!autoSeed) {
     console.warn(
       'Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD in .env, then run "npm run reset-admin".',
     )

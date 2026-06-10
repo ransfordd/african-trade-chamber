@@ -53,6 +53,11 @@ export default buildConfig({
     },
     theme: 'light',
     components: {
+      views: {
+        createFirstUser: {
+          Component: '/components/admin/AtcCreateFirstUserBlocked#AtcCreateFirstUserBlocked',
+        },
+      },
       beforeLogin: ['/components/admin/AtcLoginHeading#AtcLoginHeading'],
       beforeNav: ['/components/admin/AtcAdminOpenNav#AtcAdminOpenNav'],
       afterNav: ['/components/admin/AtcAdminNavFooter#AtcAdminNavFooter'],
