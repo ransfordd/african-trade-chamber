@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
 import './hero-slides-list-banner.scss'
@@ -61,12 +62,12 @@ export function HeroSlidesListBanner() {
         <>
           <p className="hero-slides-list-banner__body">
             Currently showing news story:{' '}
-            <a
+            <Link
               className="hero-slides-list-banner__link"
               href={`/admin/collections/news/${pinned.id}`}
             >
               {pinned.title}
-            </a>
+            </Link>
             . Uncheck &quot;Display in homepage hero&quot; on that post to use the fallback slide
             (order&nbsp;0) below.
           </p>
@@ -75,12 +76,12 @@ export function HeroSlidesListBanner() {
           ) : (
             <p className="hero-slides-list-banner__body hero-slides-list-banner__body--warn">
               No hero side image — the right thumbnail will not appear until you upload one on the{' '}
-              <a
+              <Link
                 className="hero-slides-list-banner__link"
                 href={`/admin/collections/news/${pinned.id}`}
               >
                 news post
-              </a>
+              </Link>
               .
             </p>
           )}
@@ -88,7 +89,7 @@ export function HeroSlidesListBanner() {
       ) : (
         <p className="hero-slides-list-banner__body">
           No news story is pinned. Slide&nbsp;1 uses the <strong>fallback slide</strong> (order
-          &nbsp;0). Pin a story from <a href="/admin/collections/news">News</a> to replace it.
+          &nbsp;0). Pin a story from <Link href="/admin/collections/news">News</Link> to replace it.
         </p>
       )}
       <p className="hero-slides-list-banner__hint">
