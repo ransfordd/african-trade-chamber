@@ -42,6 +42,8 @@ Add these in the app **Environment Variables** section. See [`coolify.env.exampl
 
 **Never commit real passwords to git.** Set secrets only in Coolify.
 
+**Variable names are case-sensitive.** Use exactly `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` (all uppercase). `seed_admin_email` will not work.
+
 ## 4. Deploy
 
 1. Push to `main`

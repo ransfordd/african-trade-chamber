@@ -444,9 +444,13 @@ async function main() {
       })
       console.log('Created admin user:', adminEmail)
     } else {
-      console.log(
-        `Admin user already exists (${adminEmail}). Run "npm run reset-admin" to set password from .env.`,
-      )
+      await payload.update({
+        collection: 'users',
+        id: existing.docs[0].id,
+        data: { password: adminPassword, role: 'admin' },
+        overrideAccess: true,
+      })
+      console.log(`Updated admin password for: ${adminEmail}`)
     }
   } else if (!autoSeed) {
     console.warn(
