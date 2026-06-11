@@ -14,6 +14,11 @@ if [ "${AUTO_SEED:-true}" = "true" ]; then
       echo "Error: database seed failed. See logs above (often missing SEED_ADMIN_* or DATABASE_URI)."
       exit 1
     }
+    echo "Verifying admin login in production mode..."
+    NODE_ENV=production PAYLOAD_DB_PUSH=false NODE_OPTIONS=--no-deprecation ./node_modules/.bin/tsx --tsconfig tsconfig.seed.json scripts/verify-prod-admin-login.ts || {
+      echo "Error: production-mode admin login check failed. Fix SEED_ADMIN_* in Coolify (no surrounding quotes) and redeploy."
+      exit 1
+    }
   else
     echo "Skipping seed: DATABASE_URI or PAYLOAD_SECRET is not set."
   fi

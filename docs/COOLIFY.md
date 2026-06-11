@@ -42,7 +42,7 @@ Add these in the app **Environment Variables** section. See [`coolify.env.exampl
 
 **Never commit real passwords to git.** Set secrets only in Coolify.
 
-**Password tip:** Avoid apostrophes (`'`) and quotes in `SEED_ADMIN_PASSWORD`. Some env parsers truncate values at `'`. Use letters and numbers only (e.g. `AtcAdmin2026Secure`). On deploy, seed logs must show `(login verified)` — if seed fails with a login error, fix the password and redeploy.
+**Password tip:** Avoid apostrophes (`'`) and quotes in `SEED_ADMIN_PASSWORD`. Do not wrap the value in quotes in Coolify — enter `AtcAdmin2026Secure` not `"AtcAdmin2026Secure"`. On deploy, seed logs must show `(login verified, password length 18)` for that example — if length is 20, Coolify stored extra quote characters.
 
 **Variable names are case-sensitive.** Use exactly `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` (all uppercase). `seed_admin_email` will not work.
 

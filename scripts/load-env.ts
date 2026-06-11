@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { sanitizeEnvValue } from './lib/sanitize-env.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const envPath = path.resolve(__dirname, '../.env')
@@ -14,5 +15,5 @@ export function requireEnv(name: string): string {
     console.error(`Copy .env.example to .env in the project root (expected: ${envPath})`)
     process.exit(1)
   }
-  return value.trim()
+  return sanitizeEnvValue(value)
 }

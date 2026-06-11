@@ -418,8 +418,9 @@ async function main() {
     console.log('Updated membership category copy')
   }
 
-  const adminEmail = process.env.SEED_ADMIN_EMAIL?.trim()
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD?.trim()
+  const { readEnv } = await import('./lib/sanitize-env.js')
+  const adminEmail = readEnv('SEED_ADMIN_EMAIL')
+  const adminPassword = readEnv('SEED_ADMIN_PASSWORD')
   const autoSeed = process.env.AUTO_SEED === 'true'
 
   if (autoSeed && (!adminEmail || !adminPassword)) {
