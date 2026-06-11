@@ -75,13 +75,41 @@ async function main() {
   if (adminRes.status === 307 || adminRes.status === 308) {
     const location = adminRes.headers.get('location') ?? ''
     if (location.includes('/admin/login')) {
-      console.error(`HTTP /admin redirected to login after successful auth: ${location}`)
+      console.error(`HTTP /admin redirected to login with Origin header: ${location}`)
       process.exit(1)
     }
   }
 
   if (adminRes.status !== 200) {
-    console.error(`HTTP /admin unexpected status after login: ${adminRes.status}`)
+    console.error(`HTTP /admin unexpected status with Origin: ${adminRes.status}`)
+    process.exit(1)
+  }
+
+  const adminBody = await adminRes.text()
+  if (adminBody.includes('NEXT_REDIRECT;replace;/admin/login')) {
+    console.error('HTTP /admin RSC payload redirects to login despite valid cookie.')
+    process.exit(1)
+  }
+
+  const adminNavRes = await fetch('http://127.0.0.1:3000/admin', {
+    headers: {
+      Cookie: cookieHeader,
+      'Sec-Fetch-Site': 'none',
+    },
+    redirect: 'manual',
+  })
+
+  if (adminNavRes.status === 307 || adminNavRes.status === 308) {
+    const location = adminNavRes.headers.get('location') ?? ''
+    if (location.includes('/admin/login')) {
+      console.error(`HTTP /admin redirected to login on document-style request: ${location}`)
+      process.exit(1)
+    }
+  }
+
+  const adminNavBody = await adminNavRes.text()
+  if (adminNavBody.includes('NEXT_REDIRECT;replace;/admin/login')) {
+    console.error('HTTP /admin document-style request still redirects to login.')
     process.exit(1)
   }
 
