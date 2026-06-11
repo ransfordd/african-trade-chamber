@@ -7,6 +7,10 @@ COPY package.json package-lock.json* ./
 RUN npm ci
 
 FROM base AS builder
+ARG NEXT_PUBLIC_SERVER_URL
+ARG PAYLOAD_SERVER_URL
+ENV NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}
+ENV PAYLOAD_SERVER_URL=${PAYLOAD_SERVER_URL}
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1

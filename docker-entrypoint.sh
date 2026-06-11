@@ -1,6 +1,17 @@
 #!/bin/sh
 set -e
 
+if [ -z "$NEXT_PUBLIC_SERVER_URL" ] && [ -n "$PAYLOAD_SERVER_URL" ]; then
+  echo "Warning: NEXT_PUBLIC_SERVER_URL is empty; using PAYLOAD_SERVER_URL for this container run."
+  export NEXT_PUBLIC_SERVER_URL="$PAYLOAD_SERVER_URL"
+fi
+
+if [ -z "$NEXT_PUBLIC_SERVER_URL" ]; then
+  echo "Error: NEXT_PUBLIC_SERVER_URL is not set."
+  echo "Add it in Coolify with the same value as your browser URL, enable Available at Buildtime, and redeploy."
+  exit 1
+fi
+
 if [ "${AUTO_SEED:-true}" = "true" ]; then
   if [ -n "$DATABASE_URI" ] && [ -n "$PAYLOAD_SECRET" ]; then
     if [ -z "$SEED_ADMIN_EMAIL" ] || [ -z "$SEED_ADMIN_PASSWORD" ]; then
