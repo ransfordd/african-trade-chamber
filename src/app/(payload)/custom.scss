@@ -19,6 +19,18 @@
     text-align: center;
   }
 
+  .template-minimal .login__brand {
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .template-minimal .atc-login-error {
+    color: #ffb4b4;
+    font-size: 0.9rem;
+    margin: 0 0 1rem;
+    text-align: center;
+  }
+
   .template-minimal .atc-create-first-user-blocked {
     color: rgba(255, 255, 255, 0.9);
     margin: 0 auto;

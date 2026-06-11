@@ -1,26 +1,15 @@
 'use client'
 
-import React from 'react'
-import type { UserWithToken } from '@payloadcms/ui'
-import type { FormState } from 'payload'
-import {
-  EmailField,
-  Form,
-  FormSubmit,
-  Link,
-  PasswordField,
-  useAuth,
-  useConfig,
-  useTranslation,
-} from '@payloadcms/ui'
+import React, { useState } from 'react'
+import Link from 'next/link'
+import { useConfig, useTranslation } from '@payloadcms/ui'
 import { formatAdminURL, getSafeRedirect } from 'payload/shared'
 
 const baseClass = 'login__form'
 
 /**
- * Payload's default login form uses client-side router.push after success.
- * Behind Coolify/Next.js that can reload /admin before the auth cookie is
- * visible to the server. A full navigation fixes the session hand-off.
+ * Direct JSON login with credentials:include — matches the REST API path that
+ * we verified sets payload-token correctly behind Coolify.
  */
 export function AtcLoginForm({
   prefillEmail,
@@ -41,62 +30,100 @@ export function AtcLoginForm({
   } = config
 
   const { t } = useTranslation()
-  const { setUser } = useAuth()
-
-  const initialState: FormState = {
-    email: {
-      initialValue: prefillEmail ?? undefined,
-      valid: true,
-      value: prefillEmail ?? undefined,
-    },
-    password: {
-      initialValue: prefillPassword ?? undefined,
-      valid: true,
-      value: prefillPassword ?? undefined,
-    },
-  }
+  const [email, setEmail] = useState(prefillEmail ?? '')
+  const [password, setPassword] = useState(prefillPassword ?? '')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const redirectTarget = getSafeRedirect({
     fallbackTo: adminRoute,
     redirectTo: searchParams.redirect ?? '',
   })
 
-  const handleLogin = (data: UserWithToken) => {
-    setUser(data)
-    window.location.assign(redirectTarget)
+  const loginUrl = formatAdminURL({
+    apiRoute,
+    path: `/${userSlug}/login`,
+  })
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setLoading(true)
+    setError('')
+
+    try {
+      const response = await fetch(loginUrl, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
+      })
+
+      let body: { message?: string; errors?: Array<{ message?: string }> } = {}
+      try {
+        body = await response.json()
+      } catch {
+        body = {}
+      }
+
+      if (!response.ok) {
+        setError(
+          body.message ||
+            body.errors?.[0]?.message ||
+            'The email or password provided is incorrect.',
+        )
+        setLoading(false)
+        return
+      }
+
+      window.location.href = redirectTarget
+    } catch {
+      setError('Login failed. Please try again.')
+      setLoading(false)
+    }
   }
 
   return (
-    <Form
-      action={formatAdminURL({
-        apiRoute,
-        path: `/${userSlug}/login`,
-      })}
-      className={baseClass}
-      disableSuccessStatus
-      initialState={initialState}
-      method="POST"
-      onSuccess={handleLogin as never}
-      waitForAutocomplete
-    >
+    <form className={baseClass} onSubmit={handleSubmit}>
       <div className={`${baseClass}__inputWrap`}>
-        <EmailField
-          field={{
-            name: 'email',
-            label: t('general:email'),
-            required: true,
-          }}
-          path="email"
-        />
-        <PasswordField
-          field={{
-            name: 'password',
-            label: t('general:password'),
-            required: true,
-          }}
-          path="password"
-        />
+        <div className="field-type email">
+          <label className="field-label" htmlFor="atc-login-email">
+            {t('general:email')}
+            <span className="required">*</span>
+          </label>
+          <input
+            autoComplete="email"
+            className="field-input"
+            id="atc-login-email"
+            name="email"
+            onChange={(event) => setEmail(event.target.value)}
+            required
+            type="email"
+            value={email}
+          />
+        </div>
+        <div className="field-type password">
+          <label className="field-label" htmlFor="atc-login-password">
+            {t('general:password')}
+            <span className="required">*</span>
+          </label>
+          <input
+            autoComplete="current-password"
+            className="field-input"
+            id="atc-login-password"
+            name="password"
+            onChange={(event) => setPassword(event.target.value)}
+            required
+            type="password"
+            value={password}
+          />
+        </div>
       </div>
+
+      {error ? <p className="atc-login-error">{error}</p> : null}
+
       <Link
         href={formatAdminURL({
           adminRoute,
@@ -106,7 +133,10 @@ export function AtcLoginForm({
       >
         {t('authentication:forgotPasswordQuestion')}
       </Link>
-      <FormSubmit size="large">{t('authentication:login')}</FormSubmit>
-    </Form>
+
+      <button className="btn btn--icon-style-without-border btn--size-large btn--style-primary" disabled={loading} type="submit">
+        {loading ? '…' : t('authentication:login')}
+      </button>
+    </form>
   )
 }

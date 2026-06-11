@@ -2,8 +2,9 @@ import type { AdminViewServerProps } from 'payload'
 import { redirect } from 'next/navigation'
 import { getSafeRedirect } from 'payload/shared'
 
-import { AtcLoginHeading } from './AtcLoginHeading'
+import { AtcAdminLogo } from './AtcAdminLogo'
 import { AtcLoginForm } from './AtcLoginForm'
+import { AtcLoginHeading } from './AtcLoginHeading'
 
 export function AtcLoginView({ initPageResult, searchParams }: AdminViewServerProps) {
   const { req } = initPageResult
@@ -39,6 +40,9 @@ export function AtcLoginView({ initPageResult, searchParams }: AdminViewServerPr
 
   return (
     <>
+      <div className="login__brand">
+        <AtcAdminLogo />
+      </div>
       <AtcLoginHeading />
       <AtcLoginForm
         prefillEmail={prefillEmail}
