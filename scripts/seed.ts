@@ -430,28 +430,8 @@ async function main() {
   }
 
   if (adminEmail && adminPassword) {
-    const existing = await payload.find({
-      collection: 'users',
-      where: { email: { equals: adminEmail } },
-      limit: 1,
-      overrideAccess: true,
-    })
-    if (!existing.docs.length) {
-      await payload.create({
-        collection: 'users',
-        data: { email: adminEmail, password: adminPassword, role: 'admin' },
-        overrideAccess: true,
-      })
-      console.log('Created admin user:', adminEmail)
-    } else {
-      await payload.update({
-        collection: 'users',
-        id: existing.docs[0].id,
-        data: { password: adminPassword, role: 'admin' },
-        overrideAccess: true,
-      })
-      console.log(`Updated admin password for: ${adminEmail}`)
-    }
+    const { syncAdminUser } = await import('./lib/sync-admin-user.js')
+    await syncAdminUser({ email: adminEmail, password: adminPassword, payload })
   } else if (!autoSeed) {
     console.warn(
       'Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD in .env, then run "npm run reset-admin".',

@@ -42,6 +42,8 @@ Add these in the app **Environment Variables** section. See [`coolify.env.exampl
 
 **Never commit real passwords to git.** Set secrets only in Coolify.
 
+**Password tip:** Avoid apostrophes (`'`) and quotes in `SEED_ADMIN_PASSWORD`. Some env parsers truncate values at `'`. Use letters and numbers only (e.g. `AtcAdmin2026Secure`). On deploy, seed logs must show `(login verified)` — if seed fails with a login error, fix the password and redeploy.
+
 **Variable names are case-sensitive.** Use exactly `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` (all uppercase). `seed_admin_email` will not work.
 
 ## 4. Deploy
@@ -76,5 +78,6 @@ Coolify webhooks redeploy on push. No extra CI required for basic deploys.
 - **Seed fails / tables missing:** Seed runs with `NODE_ENV=development` so Payload can push schema (push is disabled in production). Check Postgres connectivity.
 - **`/admin/create-first-user` or "Admin access is restricted":** No admin user in the database. Set `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` in Coolify and redeploy. Check logs for `Created admin user`.
 - **Deploy fails at seed:** With `AUTO_SEED=true`, both `SEED_ADMIN_*` variables are required — add them and redeploy.
+- **Admin login 401 after deploy:** Check seed logs for `(login verified)`. If missing, change `SEED_ADMIN_PASSWORD` to a value without `'` or `"` and redeploy. Or run `reset-admin` in the app terminal (see below).
 - **Images broken:** Migrate media to Payload over time; `/uploads/` files are not in the repo by default
 - **Duplicate failed postgres:** Delete the red database resource; keep only `atc-postgres`
