@@ -19,7 +19,6 @@ async function main() {
     process.exit(1)
   }
 
-  // Hit the local server like Coolify's proxy would, but send the public Origin for CSRF.
   const loginUrl = 'http://127.0.0.1:3000/api/users/login'
   console.log(`HTTP admin login check → ${loginUrl} (Origin: ${baseUrl})`)
 
@@ -47,7 +46,46 @@ async function main() {
     process.exit(1)
   }
 
-  console.log('HTTP admin login check passed (payload-token cookie set).')
+  const cookieHeader = setCookie
+    .split(/,(?=\s*[^;,]+=)/)
+    .map((part) => part.split(';')[0]?.trim())
+    .filter(Boolean)
+    .join('; ')
+
+  const meRes = await fetch('http://127.0.0.1:3000/api/users/me', {
+    headers: {
+      Cookie: cookieHeader,
+      Origin: baseUrl,
+    },
+  })
+
+  if (!meRes.ok) {
+    console.error(`HTTP /api/users/me failed after login: ${meRes.status}`)
+    process.exit(1)
+  }
+
+  const adminRes = await fetch('http://127.0.0.1:3000/admin', {
+    headers: {
+      Cookie: cookieHeader,
+      Origin: baseUrl,
+    },
+    redirect: 'manual',
+  })
+
+  if (adminRes.status === 307 || adminRes.status === 308) {
+    const location = adminRes.headers.get('location') ?? ''
+    if (location.includes('/admin/login')) {
+      console.error(`HTTP /admin redirected to login after successful auth: ${location}`)
+      process.exit(1)
+    }
+  }
+
+  if (adminRes.status !== 200) {
+    console.error(`HTTP /admin unexpected status after login: ${adminRes.status}`)
+    process.exit(1)
+  }
+
+  console.log('HTTP admin login check passed (cookie set, /admin reachable).')
   process.exit(0)
 }
 

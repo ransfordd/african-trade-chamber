@@ -37,6 +37,7 @@ Add these in the app **Environment Variables** section. See [`coolify.env.exampl
 | `PAYLOAD_SECRET` | Yes | 32+ char random string |
 | `NEXT_PUBLIC_SERVER_URL` | **Yes** | `http://your-app.sslip.io` — must match your browser URL exactly. Enable **Available at Buildtime** (admin UI embeds this during Docker build). |
 | `PAYLOAD_SERVER_URL` | **Yes** | Same URL as `NEXT_PUBLIC_SERVER_URL` — runtime Payload auth/CSRF |
+| `PAYLOAD_COOKIE_SECURE` | **Yes (HTTP)** | `false` when using `http://` (sslip.io without TLS). Set `true` only if the browser URL is `https://` |
 | `AUTO_SEED` | Yes | `true` (runs seed on every container start; idempotent) |
 | `SEED_ADMIN_EMAIL` | **Yes** | `admin@africantradechamber.org` — required when `AUTO_SEED=true` |
 | `SEED_ADMIN_PASSWORD` | **Yes** | strong admin login password — required when `AUTO_SEED=true` |
@@ -80,6 +81,6 @@ Coolify webhooks redeploy on push. No extra CI required for basic deploys.
 - **`/admin/create-first-user` or "Admin access is restricted":** No admin user in the database. Set `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` in Coolify and redeploy. Check logs for `Created admin user`.
 - **Deploy fails at seed:** With `AUTO_SEED=true`, both `SEED_ADMIN_*` variables are required — add them and redeploy.
 - **Admin login 401 after deploy:** Check seed logs for `(login verified, password length N)`. If you set `AtcAdmin2026Secure`, N must be **18**. If N is 20, Coolify stored extra characters — delete `SEED_ADMIN_PASSWORD`, re-type the value manually (no paste), save, redeploy.
-- **Login page reloads with no dashboard:** Password auth is OK if seed shows `login verified`. Common causes: (1) browser uses **https** but env URLs use **http** — set both URL vars to `https://...` if Coolify serves HTTPS, or open the exact **http://** URL from env; (2) redeploy after changing `NEXT_PUBLIC_SERVER_URL` (build-time). Check DevTools → Network → login → Response headers for `Set-Cookie: payload-token`.
+- **Login page reloads with no dashboard:** Password auth is OK if seed shows `login verified`. Common causes: (1) browser URL does not match env — open the exact URL from `NEXT_PUBLIC_SERVER_URL` (usually `http://your-app.sslip.io/admin`, not `https://`); (2) missing `PAYLOAD_COOKIE_SECURE=false` when using HTTP; (3) redeploy after changing `NEXT_PUBLIC_SERVER_URL` (build-time). Check deploy logs for `HTTP admin login check passed`. In DevTools → Network → login → Response headers, confirm `Set-Cookie: payload-token`.
 - **Images broken:** Migrate media to Payload over time; `/uploads/` files are not in the repo by default
 - **Duplicate failed postgres:** Delete the red database resource; keep only `atc-postgres`

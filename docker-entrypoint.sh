@@ -40,4 +40,26 @@ else
   echo "Skipping seed: AUTO_SEED is not true."
 fi
 
+if [ "${RUN_HTTP_LOGIN_CHECK:-true}" = "true" ] && [ -n "$SEED_ADMIN_EMAIL" ] && [ -n "$SEED_ADMIN_PASSWORD" ]; then
+  (
+    sleep 3
+    node -e "
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      (async () => {
+        for (let i = 0; i < 10; i++) {
+          try {
+            const res = await fetch('http://127.0.0.1:3000/admin/login');
+            if (res.ok) return;
+          } catch {}
+          await wait(2000);
+        }
+        process.exit(1);
+      })();
+    " || echo "Warning: app did not become ready for HTTP login check."
+    NODE_OPTIONS=--no-deprecation ./node_modules/.bin/tsx --tsconfig tsconfig.seed.json scripts/verify-http-admin-login.ts || {
+      echo "Warning: HTTP admin login check failed. Confirm PAYLOAD_SERVER_URL matches your browser URL and PAYLOAD_COOKIE_SECURE=false for HTTP."
+    }
+  ) &
+fi
+
 exec node server.js
