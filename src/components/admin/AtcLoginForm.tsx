@@ -81,23 +81,25 @@ export function AtcLoginForm({
 
       {state.error ? <p className="atc-login-error">{state.error}</p> : null}
 
-      <Link
-        href={formatAdminURL({
-          adminRoute,
-          path: forgotRoute,
-        })}
-        prefetch={false}
-      >
-        {t('authentication:forgotPasswordQuestion')}
-      </Link>
+      <div className={`${baseClass}__footer`}>
+        <Link
+          href={formatAdminURL({
+            adminRoute,
+            path: forgotRoute,
+          })}
+          prefetch={false}
+        >
+          {t('authentication:forgotPasswordQuestion')}
+        </Link>
 
-      <button
-        className="btn btn--icon-style-without-border btn--size-large btn--style-primary"
-        disabled={isPending}
-        type="submit"
-      >
-        {isPending ? '…' : t('authentication:login')}
-      </button>
+        <button
+          className="btn btn--icon-style-without-border btn--size-large btn--style-primary"
+          disabled={isPending}
+          type="submit"
+        >
+          {isPending ? '…' : t('authentication:login')}
+        </button>
+      </div>
     </form>
   )
 }
